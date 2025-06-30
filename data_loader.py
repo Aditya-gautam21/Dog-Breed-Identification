@@ -1,19 +1,18 @@
-import os
-import zipfile
-import subprocess
+import tensorflow as tf
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
-def download_data():
-    os.makedirs("data", exist_ok=True)
-    subprocess.run([
-        "kaggle", "competitions", "download",
-        "-c", "dog-breed-identification",
-        "-p", "data"
-    ], check=True)
+def get_data_generators(train_dir, target_size=(224, 224), batch_size=32):
+    datagen = ImageDataGenerator(rescale=1./255, validation_split=0.2)
 
-    with zipfile.ZipFile("data/dog-breed-identification.zip", "r") as zip_ref:
-        zip_ref.extractall("data")
-    os.remove("data/dog-breed-identification.zip")
-    print("✅ Data downloaded and extracted to /data")
-
-if __name__ == "__main__":
-    download_data()
+    train_gen = datagen.flow_from_directory(train_dir,
+                                            target_size=target_size,
+                                            batch_size=batch_size,
+                                            class_mode='categorical',
+                                            subset='training')
+    
+    val_gen = datagen.flow_from_directory(train_dir,
+                                          target_size=target_size,
+                                          batch_size=batch_size,
+                                          class_mode='categorical',
+                                          subset='validation')
+    return train_gen, val_gen
