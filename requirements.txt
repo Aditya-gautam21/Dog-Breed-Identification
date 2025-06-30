@@ -1,4 +1,7 @@
 tensorflow
+tensorflow-gpu
+tensorboard
+keras
 numpy
 pandas
 matplotlib
